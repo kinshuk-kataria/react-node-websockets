@@ -11,7 +11,6 @@ function Login({ WS_URL, onLogin }) {
   });
 
   const logInUser = () => {
-    console.log('testing');
     if (!username.trim()) {
       return;
     }
