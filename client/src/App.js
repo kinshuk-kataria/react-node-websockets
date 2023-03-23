@@ -1,5 +1,6 @@
 import React from 'react';
 import useWebSocket from 'react-use-websocket';
+import Login from './pages/Login/Login';
 
 const WS_URL = 'ws://localhost:8000';
 
@@ -10,5 +11,9 @@ export default function App() {
     }
   });
 
-  return <div>Hello web sockets</div>;
+  return (
+    <div>
+      <Login />
+    </div>
+  );
 }
