@@ -1,0 +1,12 @@
+.editor {
+  padding: 3rem;
+}
+.editor__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.editor__document {
+  flex: 2;
+  padding-right: 2rem;
+}

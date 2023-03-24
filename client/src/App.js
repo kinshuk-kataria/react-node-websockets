@@ -20,6 +20,7 @@ export default function App() {
   });
 
   useEffect(() => {
+    console.log(readyState);
     if (username && readyState === ReadyState.OPEN) {
       sendJsonMessage({
         username,

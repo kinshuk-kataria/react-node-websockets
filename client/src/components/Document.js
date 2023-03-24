@@ -17,6 +17,12 @@ function Document({ WS_URL }) {
     });
   }
 
-  return <DefaultEditor value={html} onChange={handleHtmlChange} />;
+  return (
+    <DefaultEditor
+      value={html}
+      onChange={handleHtmlChange}
+      containerProps={{ style: { height: '50vh', border: '1px solid black' } }}
+    />
+  );
 }
 export default Document;

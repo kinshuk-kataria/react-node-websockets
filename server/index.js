@@ -58,7 +58,7 @@ function handleDisconnect(userId) {
   json.data = { users, userActivity };
   delete clients[userId];
   delete users[userId];
-  broadcastMessage(json);
+  broadcastMessage(json); 
 }
 
 // recieve new client request
