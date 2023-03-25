@@ -1,31 +1,32 @@
-const { WebSocketServer, WebSocket } = require('ws');
+const { WebSocket, WebSocketServer } = require('ws');
 const http = require('http');
 const uuidv4 = require('uuid').v4;
 
-const PORT = 8000;
+// Spinn http and WebSocket server.
 const server = http.createServer();
 const wsServer = new WebSocketServer({ server });
-server.listen(PORT, () => {
-  console.log(`server listening on port:${PORT}`);
+const port = 8000;
+server.listen(port, () => {
+  console.log(`WebSocket server is running on port ${port}`);
 });
 
-//maintain clients
+//maintain active connections
 const clients = {};
-//maintain active users
+// maintain active users
 const users = {};
-//current editor content
+// maintain current editor content
 let editorContent = null;
-//user  activity history
+// User activity history.
 let userActivity = [];
 
-//event types
+// Event types
 const typesDef = {
   USER_EVENT: 'userevent',
   CONTENT_CHANGE: 'contentchange'
 };
 
 function broadcastMessage(json) {
-  // send current data to connected clients
+  // send data to connected clients
   const data = JSON.stringify(json);
   for (let userId in clients) {
     let client = clients[userId];
@@ -38,10 +39,9 @@ function broadcastMessage(json) {
 function handleMessage(message, userId) {
   const dataFromClient = JSON.parse(message.toString());
   const json = { type: dataFromClient.type };
-
   if (dataFromClient.type === typesDef.USER_EVENT) {
     users[userId] = dataFromClient;
-    userActivity.push(`${dataFromClient.username} joined`);
+    userActivity.push(`${dataFromClient.username} joined to edit the document`);
     json.data = { users, userActivity };
   } else if (dataFromClient.type === typesDef.CONTENT_CHANGE) {
     editorContent = dataFromClient.content;
@@ -51,23 +51,26 @@ function handleMessage(message, userId) {
 }
 
 function handleDisconnect(userId) {
-  console.log(`${userId} disconnected`);
+  console.log(`${userId} disconnected.`);
   const json = { type: typesDef.USER_EVENT };
   const username = users[userId]?.username || userId;
-  userActivity.push(`${username} left`);
+  userActivity.push(`${username} left the document`);
   json.data = { users, userActivity };
   delete clients[userId];
   delete users[userId];
-  broadcastMessage(json); 
+  broadcastMessage(json);
 }
 
 // recieve new client request
-wsServer.on('connection', connection => {
+wsServer.on('connection', function (connection) {
+  // Generate unique code for user
   const userId = uuidv4();
   console.log('Recieved a new connection');
-
+  console.log(editorContent);
+  // Store the new connection and handle messages
   clients[userId] = connection;
-  console.log(`${userId} connected`);
-  connection.on('message', message => handleMessage(message));
+  console.log(`${userId} connected.`);
+  connection.on('message', message => handleMessage(message, userId));
+  // User disconnected
   connection.on('close', () => handleDisconnect(userId));
 });
